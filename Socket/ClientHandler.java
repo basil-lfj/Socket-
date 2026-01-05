@@ -4,6 +4,8 @@ import java.net.*;
 public class ClientHandler extends Thread {
     private Socket socket;
     private int num;
+    // 缓冲区大小：支持20KB+长文本消息
+    private static final int BUFFER_SIZE = 32768; // 32KB缓冲区
 
     public ClientHandler(Socket socket, int num) {
         this.socket = socket;
@@ -25,8 +27,10 @@ public class ClientHandler extends Thread {
                 System.out.println(">> Client " + num + " sent: " + input);
                 // 这里可以根据 order 解析命令进行转发 [cite: 90, 107]
             }
+        } catch (EOFException e) {
+            System.out.println(">> Client " + num + " disconnected normally.");
         } catch (IOException e) {
-            System.out.println(">> Client " + num + " disconnected.");
+            System.out.println(">> Client " + num + " disconnected: " + e.getMessage());
         } finally {
             Server.ClientList.remove(this); // 断开连接后移除 [cite: 59]
         }
