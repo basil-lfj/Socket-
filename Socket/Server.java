@@ -7,6 +7,11 @@ public class Server {
     public static final List<ClientHandler> ClientList = Collections.synchronizedList(new ArrayList<>());
     private static int ClientCount = 0;
 
+    // 验证端口号是否有效
+    private static boolean isValidPort(int port) {
+        return port >= 0 && port <= 65535;
+    }
+
     public static void main(String[] args) throws IOException {
         Scanner sc = new Scanner(System.in);
         int port = 8080;
@@ -15,9 +20,13 @@ public class Server {
         if (args.length >= 1) {
             try {
                 port = Integer.parseInt(args[0]);
+                if (!isValidPort(port)) {
+                    System.out.println(">> 错误：端口号必须在0-65535范围内");
+                    System.exit(0);
+                }
             } catch (NumberFormatException e) {
-                System.out.println(">> 端口号格式错误，使用默认端口8080");
-                port = 8080;
+                System.out.println(">> 错误：端口号格式不正确，请输入有效的数字");
+                System.exit(0);
             }
         }
 
@@ -28,9 +37,13 @@ public class Server {
             if (!inputPort.isEmpty()) {
                 try {
                     port = Integer.parseInt(inputPort);
+                    if (!isValidPort(port)) {
+                        System.out.println(">> 错误：端口号必须在0-65535范围内");
+                        System.exit(0);
+                    }
                 } catch (NumberFormatException e) {
-                    System.out.println(">> 端口号格式错误，使用默认端口8080");
-                    port = 8080;
+                    System.out.println(">> 错误：端口号格式不正确，请输入有效的数字");
+                    System.exit(0);
                 }
             }
         }

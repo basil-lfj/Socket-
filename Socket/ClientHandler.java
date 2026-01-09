@@ -23,8 +23,31 @@ public class ClientHandler extends Thread {
             Server.sendToClient(this, 0, "-t", "Welcome! Your ID is " + num, "UTF-8");
 
             String input;
+            boolean receivingFile = false;
+            StringBuilder fileContent = new StringBuilder();
+            String currentFilename = "";
+            
             while ((input = dis.readUTF()) != null) { // 循环读取客户端消息 [cite: 88]
-                System.out.println(">> Client " + num + " sent: " + input);
+                if (input.startsWith("[FILE] ")) {
+                    // 开始接收文件
+                    receivingFile = true;
+                    currentFilename = input.substring(7);
+                    fileContent = new StringBuilder();
+                    System.out.println(">> Client " + num + " is sending file: " + currentFilename);
+                } else if (input.equals("[FILE_END]")) {
+                    // 文件接收完成，显示文件内容
+                    receivingFile = false;
+                    System.out.println(">> Client " + num + " sent file: " + currentFilename);
+                    System.out.println(">> File content:");
+                    System.out.println(fileContent.toString());
+                    System.out.println(">> End of file");
+                } else if (receivingFile) {
+                    // 接收文件内容
+                    fileContent.append(input);
+                } else {
+                    // 普通消息
+                    System.out.println(">> Client " + num + " sent: " + input);
+                }
                 // 这里可以根据 order 解析命令进行转发 [cite: 90, 107]
             }
         } catch (EOFException e) {
